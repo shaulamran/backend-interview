@@ -28,8 +28,7 @@ abstract class ComplexExpression {
   constructor(
     public leftExpression: ComplexExpression,
     public rightExpression: ComplexExpression
-  ) {
-  }
+  ) {}
 
   abstract calc(): boolean;
 }
@@ -56,53 +55,61 @@ class NotOperator extends ComplexExpression {
   }
 }
 
-const operatorToClassMap = {
-  EQUAL: Equal,
-  GREATER_THAN: GreaterThan,
-  LOWER_THAN: LowerThan,
-  AND: AndOperator,
-  OR: OrOperator,
-  NOT: NotOperator,
-};
-
-function expressionToTree(expression, obj) {
+function expressionToTree(expression: string, obj: Record<string, string>) {
+  // Removing whitespaces and quotation marks
   expression = expression
     .replace(/\s/g, '')
     .replace(/'/g, '')
     .replace(/"/g, '');
+
   var operator = extractOperator(expression);
 
-  if (operator == 'AND') {
-    const { expressionOne, expressionTwo } =
-      extractTwoSubExpressions(expression);
-    const expressionOneTree = expressionToTree(expressionOne, obj);
-    const expressionTwoTree = expressionToTree(expressionTwo, obj);
-    const andTree = new AndOperator(expressionOneTree, expressionTwoTree);
-    return andTree;
-  } else if (operator == 'OR') {
-    const { expressionOne, expressionTwo } =
-      extractTwoSubExpressions(expression);
-    const expressionOneTree = expressionToTree(expressionOne, obj);
-    const expressionTwoTree = expressionToTree(expressionTwo, obj);
-    const orTree = new OrOperator(expressionOneTree, expressionTwoTree);
-    return orTree;
-  } else if (operator == 'NOT') {
-    const subExpression = expression.substring(4, expression.length - 1);
-    const notTree = new NotOperator(expressionToTree(subExpression, obj));
-    return notTree;
-  } else if (
-    operator == 'EQUAL' ||
-    operator == 'GREATER_THAN' ||
-    operator == 'LOWER_THAN'
-  ) {
-    const { operand1, operand2 } = extractOperands(expression);
-    const operatorClass = operatorToClassMap[operator];
-    const expressionTree = new operatorClass(operand1, operand2, obj);
-    return expressionTree;
-  }
+  const { className, parsingFunc } = operatorToClassMap[operator];
+  return parsingFunc(expression, className, obj);
 }
 
-function extractTwoSubExpressions(expression) {
+const operatorToClassMap = {
+  EQUAL: { className: Equal, parsingFunc: parseAtomicExpression },
+  GREATER_THAN: { className: GreaterThan, parsingFunc: parseAtomicExpression },
+  LOWER_THAN: { className: LowerThan, parsingFunc: parseAtomicExpression },
+  AND: { className: AndOperator, parsingFunc: parseComplexExpression },
+  OR: { className: OrOperator, parsingFunc: parseComplexExpression },
+  NOT: { className: NotOperator, parsingFunc: parseNotExpression },
+};
+
+function parseComplexExpression(
+  expression: string,
+  className,
+  obj: Record<string, string>
+) {
+  const { expressionOne, expressionTwo } = extractTwoSubExpressions(expression);
+  const expressionOneTree = expressionToTree(expressionOne, obj);
+  const expressionTwoTree = expressionToTree(expressionTwo, obj);
+  const andTree = new className(expressionOneTree, expressionTwoTree);
+  return andTree;
+}
+
+function parseNotExpression(
+  expression: string,
+  className,
+  obj: Record<string, string>
+) {
+  const subExpression = expression.substring(4, expression.length - 1);
+  const notTree = new className(expressionToTree(subExpression, obj));
+  return notTree;
+}
+
+function parseAtomicExpression(
+  expression: string,
+  className,
+  obj: Record<string, string>
+) {
+  const { operand1, operand2 } = extractOperands(expression);
+  const expressionTree = new className(operand1, operand2, obj);
+  return expressionTree;
+}
+
+function extractTwoSubExpressions(expression: string) {
   let parenthesisCounter = 0;
   let i = 0;
   let beginningOfFirstExpression = -1;
@@ -168,20 +175,8 @@ function extractOperands(expression) {
   return { operand1, operand2 };
 }
 
-function extractOperator(expression) {
-  if (expression.startsWith('AND')) {
-    return 'AND';
-  } else if (expression.startsWith('OR')) {
-    return 'OR';
-  } else if (expression.startsWith('NOT')) {
-    return 'NOT';
-  } else if (expression.startsWith('EQUAL')) {
-    return 'EQUAL';
-  } else if (expression.startsWith('GREATER_THAN')) {
-    return 'GREATER_THAN';
-  } else if ('LOWER_THAN') {
-    return 'LOWER_THAN';
-  }
+function extractOperator(expression: string) {
+  return expression.substring(0, expression.indexOf('('));
 }
 
 export default expressionToTree;
