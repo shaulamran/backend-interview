@@ -24,7 +24,7 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is a solution to a backend interview home test, implemented using Nest and Typescript. There are unit tests for the core logic.
 
 ## Installation
 
@@ -38,11 +38,8 @@ $ npm install
 # development
 $ npm run start
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+For a sanity check, go to:
+localhost:3000/store?query(id,1)
 ```
 
 ## Test
@@ -50,12 +47,6 @@ $ npm run start:prod
 ```bash
 # unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
 
 ## Support
