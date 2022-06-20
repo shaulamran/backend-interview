@@ -59,7 +59,10 @@ const operatorToClassMap = {
 };
 
 function expressionToTree(expression, obj) {
-  expression = expression.replace(/\s/g, '').replace(/'/g, '').replace(/"/g, '');
+  expression = expression
+    .replace(/\s/g, '')
+    .replace(/'/g, '')
+    .replace(/"/g, '');
   var operator = extractOperator(expression);
 
   if (operator == 'AND') {
