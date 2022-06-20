@@ -82,6 +82,14 @@ test('Expression with single quotation marks', () => {
   });
 });
 
+test('Expression with double quotation marks', () => {
+  generateTest({
+    EXPRESSION: `EQUAL( id , "first-post" )`,
+    TO_BE_FOUND: [{ id: 'first-post' }],
+    TO_NOT_BE_FOUND: [{ id: 'second-post' }],
+  });
+});
+
 function generateTest(data) {
   const { EXPRESSION, TO_BE_FOUND, TO_NOT_BE_FOUND } = data;
   const store = [...TO_BE_FOUND, ...TO_NOT_BE_FOUND];
