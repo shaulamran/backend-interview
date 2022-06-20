@@ -8,13 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppService = void 0;
 const common_1 = require("@nestjs/common");
-const expression_1 = require("./expression");
+const expressionToTree_1 = require("./expression-parser/expressionToTree");
 let AppService = class AppService {
     constructor() {
         this.memoryStore = new Array({ shaul: 'dak' });
     }
     getStore(query) {
-        const result = this.memoryStore.filter((obj) => (0, expression_1.default)(query, obj).calc());
+        const result = this.memoryStore.filter((obj) => (0, expressionToTree_1.default)(query, obj).calc());
         return result;
     }
     postStore(objToSave) {

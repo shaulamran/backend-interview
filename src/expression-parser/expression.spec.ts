@@ -1,4 +1,4 @@
-import expressionToTree from './expression';
+import expressionToTree from './expressionToTree';
 
 test('Equal', () => {
   generateTest({

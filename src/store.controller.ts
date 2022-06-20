@@ -1,18 +1,18 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { AppService } from './app.service';
+import { StoreService } from './store.service';
 
 @Controller('/store')
-export class AppController {
-  constructor(private readonly appService: AppService) {}
+export class StoreController {
+  constructor(private readonly storeService: StoreService) {}
 
   @Get('/')
   getStore(@Query() queryParams: Record<string, string>): any[] {
     const query = queryParams.query;
-    return this.appService.getStore(query);
+    return this.storeService.getStore(query);
   }
 
   @Post('/')
   postStore(@Body() body: Record<string, string>) {
-    this.appService.postStore(body);
+    this.storeService.postStore(body);
   }
 }
