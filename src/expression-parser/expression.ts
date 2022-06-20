@@ -1,68 +1,13 @@
-class AtomicExpression {
-  constructor(
-    public operand1: string,
-    public operand2: string,
-    public obj: Record<string, string>
-  ) {}
-}
+import {Equal, GreaterThan, LowerThan, AndOperator, OrOperator, NotOperator, Expression} from './expressionClasses';
 
-class Equal extends AtomicExpression {
-  calc() {
-    return this.obj[this.operand1] == this.operand2;
-  }
-}
-
-class GreaterThan extends AtomicExpression {
-  calc() {
-    return this.obj[this.operand1] > this.operand2;
-  }
-}
-
-class LowerThan extends AtomicExpression {
-  calc() {
-    return this.obj[this.operand1] < this.operand2;
-  }
-}
-
-abstract class ComplexExpression {
-  constructor(
-    public leftExpression: ComplexExpression,
-    public rightExpression: ComplexExpression
-  ) {}
-
-  abstract calc(): boolean;
-}
-
-class AndOperator extends ComplexExpression {
-  calc() {
-    return this.leftExpression.calc() && this.rightExpression.calc();
-  }
-}
-
-class OrOperator extends ComplexExpression {
-  calc() {
-    return this.leftExpression.calc() || this.rightExpression.calc();
-  }
-}
-
-class NotOperator extends ComplexExpression {
-  constructor(public leftExpression: ComplexExpression) {
-    super(leftExpression, null);
-  }
-
-  calc() {
-    return !this.leftExpression.calc();
-  }
-}
-
-function expressionToTree(expression: string, obj: Record<string, string>) {
+function expressionToTree(expression: string, obj: Record<string, string>) : Expression {
   // Removing whitespaces and quotation marks
   expression = expression
     .replace(/\s/g, '')
     .replace(/'/g, '')
     .replace(/"/g, '');
 
-  var operator = extractOperator(expression);
+  var operator = expression.substring(0, expression.indexOf('('));
 
   const { className, parsingFunc } = operatorToClassMap[operator];
   return parsingFunc(expression, className, obj);
@@ -107,6 +52,14 @@ function parseAtomicExpression(
   const { operand1, operand2 } = extractOperands(expression);
   const expressionTree = new className(operand1, operand2, obj);
   return expressionTree;
+}
+
+function extractOperands(expression: string) {
+  var operandsRegex = new RegExp(/([^(]+),([^\)]+)\)/gim);
+  var match = operandsRegex.exec(expression);
+  const operand1 = match[1];
+  const operand2 = match[2];
+  return { operand1, operand2 };
 }
 
 function extractTwoSubExpressions(expression: string) {
@@ -165,18 +118,6 @@ function extractTwoSubExpressions(expression: string) {
   );
 
   return { expressionOne, expressionTwo };
-}
-
-function extractOperands(expression) {
-  var operandsRegex = new RegExp(/([^(]+),([^\)]+)\)/gim);
-  var match = operandsRegex.exec(expression);
-  const operand1 = match[1];
-  const operand2 = match[2];
-  return { operand1, operand2 };
-}
-
-function extractOperator(expression: string) {
-  return expression.substring(0, expression.indexOf('('));
 }
 
 export default expressionToTree;
