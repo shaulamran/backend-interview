@@ -1,9 +1,9 @@
 class AtomicExpression {
-  constructor(operand1, operand2, obj) {
-    this.operand1 = operand1;
-    this.operand2 = operand2;
-    this.obj = obj;
-  }
+  constructor(
+    public operand1: string,
+    public operand2: string,
+    public obj: Record<string, string>
+  ) {}
 }
 
 class Equal extends AtomicExpression {
@@ -24,11 +24,14 @@ class LowerThan extends AtomicExpression {
   }
 }
 
-class ComplexExpression {
-  constructor(leftExpression, rightExpression) {
-    this.leftExpression = leftExpression;
-    this.rightExpression = rightExpression;
+abstract class ComplexExpression {
+  constructor(
+    public leftExpression: ComplexExpression,
+    public rightExpression: ComplexExpression
+  ) {
   }
+
+  abstract calc(): boolean;
 }
 
 class AndOperator extends ComplexExpression {
@@ -44,6 +47,10 @@ class OrOperator extends ComplexExpression {
 }
 
 class NotOperator extends ComplexExpression {
+  constructor(public leftExpression: ComplexExpression) {
+    super(leftExpression, null);
+  }
+
   calc() {
     return !this.leftExpression.calc();
   }
