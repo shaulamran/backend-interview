@@ -28,7 +28,7 @@ Complex operator means that it holds two more expressions in it and they can be 
 
 Each operator has a parsing function for a single atomic expression or a complex one.
 
-There is one special operator called NOT which isn't atomic but also doesn't have two expressions in it, but one instead it has its own special parsing function.
+There is one special operator called `NOT` which isn't atomic but also doesn't have two expressions in it, but one instead it has its own special parsing function called `parseNotExpression`.
 <!-- NOTE-swimm-snippet: the lines below link your snippet to Swimm -->
 ### 📄 src/expression-parser/expressionToTree.ts
 ```typescript
